@@ -2,7 +2,7 @@ name: Build, Test & Publish Docker
 on: push
 
 env:
-  IMAGE_NAME: "${{ github.repository }}"
+  IMAGE_NAME: "${{ github.event.repository.name }}"
 
 jobs:
   publish:
