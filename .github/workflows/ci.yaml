@@ -2,7 +2,7 @@ name: Build, Test & Publish Docker
 on: push
 
 env:
-  IMAGE_NAME: sir-ode-python-connector
+  IMAGE_NAME: "${{ github.repository }}"
 
 jobs:
   publish:
