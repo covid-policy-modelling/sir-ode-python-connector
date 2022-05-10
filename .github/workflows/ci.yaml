@@ -18,8 +18,6 @@ jobs:
 
           # Strip git ref prefix (refs/heads/ or refs/tags/) from version
           # but keep the rest of the ref. Replaces / with - to make the package name valid.
-          # Do not attempt to obtain the version number from vx.y.z tags:
-          # this is handled by the publish_version workflow.
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,refs/\(heads\|tags\)/\(.*\),\2,' | tr '/' '-')
 
           # Always tag with git sha or version tag

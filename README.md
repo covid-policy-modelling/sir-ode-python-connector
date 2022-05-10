@@ -7,14 +7,10 @@ The final size, the peak infected, and the time of the peak infected is returned
 ## Content
 
 * [Prerequisites](#prerequisites)
-* [Assumptions](#assumptions)
-* [Process](#process)
 * [Requirements for Docker images](#requirements-for-docker-images)
 * [Input](#input)
 * [Output](#output)
-* [Updating your model](#updating-your-model)
-* [Alternative integrations](#alternative-integrations)
-* [Examples](#examples)
+* [Updating the model](#updating-the-model)
 
 ## Prerequisites
 
