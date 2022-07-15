@@ -35,7 +35,6 @@ model_output_schema = json.load(open(model_output_schema_fn, 'r'))
 # Read input and validate
 model_input = json.load(open(model_input_fn, 'r'))
 model_input_check = validate(model_input, model_input_schema)
-
 if model_input_check != None:
     sys.exit(1)
 
@@ -72,35 +71,49 @@ tol = 1e-6
 limit = lambda t, u: steady_state(t,u,p,model,tol)
 limit.terminal = True
 global flag
-flag = 1
 
-# Extract inputs from JSON
-tspan = model_input['tspan']
-u0 = model_input['u0']
-p = model_input['p']
+# Count number of simulations
+batch = isinstance(model_input, list)
 
-# Run model
-sol = solve_ivp(lambda t, u: model(t, u, p),
-                tspan,
-                u0,
-                events = limit)
+if not batch:
+    model_input = [model_input]
+num_simulations = len(model_input)
 
-# Generate outputs
-## Final size
-fs = sol.y[2,-1]
-## Peak infected and peak time
-f = InterpolatedUnivariateSpline(sol.t, sol.y[1,:], k=4)
-cr_pts = f.derivative().roots()
-cr_pts = np.append(cr_pts, (sol.t[0], sol.t[-1]))  # also check the endpoints of the interval
-cr_vals = f(cr_pts)
-max_index = np.argmax(cr_vals)
-pk = cr_vals[max_index]
-pkt = cr_pts[max_index]
+model_output = []
+for i in range(num_simulations):
+    input = model_input[i]
+    flag = 1
+    # Extract inputs from JSON
+    tspan = input['tspan']
+    u0 = input['u0']
+    p = input['p']
 
-# Extract outputs and validate
-model_output = {"metadata": model_input, "model": model_description, "t": sol.t.tolist(), "u": sol.y.tolist(), "outputs":[fs, pk, pkt]}
+    # Run model
+    sol = solve_ivp(lambda t, u: model(t, u, p),
+                    tspan,
+                    u0,
+                    events = limit)
+
+    # Generate outputs
+    ## Final size
+    fs = sol.y[2,-1]
+    ## Peak infected and peak time
+    f = InterpolatedUnivariateSpline(sol.t, sol.y[1,:], k=4)
+    cr_pts = f.derivative().roots()
+    cr_pts = np.append(cr_pts, (sol.t[0], sol.t[-1]))  # also check the endpoints of the interval
+    cr_vals = f(cr_pts)
+    max_index = np.argmax(cr_vals)
+    pk = cr_vals[max_index]
+    pkt = cr_pts[max_index]
+
+    # Extract outputs
+    output = {"metadata": input, "model": model_description, "t": sol.t.tolist(), "u": sol.y.tolist(), "outputs":[fs, pk, pkt]}
+    model_output.append(output)
+
+if not batch:
+    model_output = model_output[0]
+
 model_output_check = validate(model_output, model_output_schema)
-
 if model_output_check != None:
     sys.exit(1)
 
@@ -108,7 +121,7 @@ if model_output_check != None:
 with open(model_output_fn,"w") as f:
     json.dump(model_output, f, indent="  ")
 
-print(model_output)
+#print(model_output)
 
 # Exit without errors
 sys.exit(0)

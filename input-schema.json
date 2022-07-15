@@ -1,26 +1,30 @@
 {
-  "$ref": "#/definitions/MinimalModelInput",
+  "$ref": "#/definitions/MinimalModelInputBatch",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "MinimalModelInput": {
       "additionalProperties": false,
       "properties": {
         "dt": {
+          "description": "Optional time interval at which to compute the states.",
           "type": "number"
         },
         "p": {
+          "description": "Vector of model parameters",
           "items": {
             "type": "number"
           },
           "type": "array"
         },
         "tspan": {
+          "description": "Timespan over which to simulate the model",
           "items": {
             "type": "number"
           },
           "type": "array"
         },
         "u0": {
+          "description": "Vector of initial conditions",
           "items": {
             "type": "number"
           },
@@ -32,7 +36,22 @@
         "u0",
         "tspan"
       ],
+      "title": "Minimal Model Input",
       "type": "object"
+    },
+    "MinimalModelInputBatch": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/MinimalModelInput"
+        },
+        {
+          "items": {
+            "$ref": "#/definitions/MinimalModelInput"
+          },
+          "type": "array"
+        }
+      ],
+      "title": "Minimal Model Input Batch"
     }
   }
 }

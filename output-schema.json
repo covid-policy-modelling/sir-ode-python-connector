@@ -1,95 +1,30 @@
 {
-  "$ref": "#/definitions/MinimalModelOutput",
+  "$ref": "#/definitions/MinimalModelOutputBatch",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "CommonModelInput": {
-      "additionalProperties": false,
-      "description": "A generalized description of the input to an epidemiological model.",
-      "properties": {
-        "parameters": {
-          "$ref": "#/definitions/ModelParameters"
-        },
-        "region": {
-          "$ref": "#/definitions/Region"
-        },
-        "subregion": {
-          "$ref": "#/definitions/Subregion"
-        }
-      },
-      "required": [
-        "region",
-        "parameters"
-      ],
-      "type": "object"
-    },
-    "ISODate": {
-      "examples": [
-        "2020-03-06"
-      ],
-      "format": "date",
-      "type": "string"
-    },
-    "Intensity": {
-      "enum": [
-        "aggressive",
-        "moderate",
-        "mild"
-      ],
-      "type": "string"
-    },
-    "InterventionPeriod": {
-      "additionalProperties": false,
-      "properties": {
-        "caseIsolation": {
-          "$ref": "#/definitions/Intensity",
-          "description": "The level to which individuals with symptoms self-isolate."
-        },
-        "reductionPopulationContact": {
-          "description": "The estimated reduction in population contact resulting from\nall of the above interventions. Some models require this generalized\nparameter instead of the individual interventions.",
-          "type": "number"
-        },
-        "schoolClosure": {
-          "$ref": "#/definitions/Intensity",
-          "description": "The level of school closure in the region."
-        },
-        "socialDistancing": {
-          "$ref": "#/definitions/Intensity",
-          "description": "The level of social distancing in the region."
-        },
-        "startDate": {
-          "$ref": "#/definitions/ISODate",
-          "description": "An ISO-8601 string encoding the date that these interventions begin."
-        },
-        "voluntaryHomeQuarantine": {
-          "$ref": "#/definitions/Intensity",
-          "description": "The level to which entire households self-isolate when one member\nof the household has symptoms."
-        }
-      },
-      "required": [
-        "startDate",
-        "reductionPopulationContact"
-      ],
-      "type": "object"
-    },
     "MinimalModelInput": {
       "additionalProperties": false,
       "properties": {
         "dt": {
+          "description": "Optional time interval at which to compute the states.",
           "type": "number"
         },
         "p": {
+          "description": "Vector of model parameters",
           "items": {
             "type": "number"
           },
           "type": "array"
         },
         "tspan": {
+          "description": "Timespan over which to simulate the model",
           "items": {
             "type": "number"
           },
           "type": "array"
         },
         "u0": {
+          "description": "Vector of initial conditions",
           "items": {
             "type": "number"
           },
@@ -101,30 +36,34 @@
         "u0",
         "tspan"
       ],
+      "title": "Minimal Model Input",
       "type": "object"
     },
     "MinimalModelOutput": {
       "additionalProperties": false,
       "properties": {
         "metadata": {
-          "$ref": "#/definitions/ModelInput"
+          "$ref": "#/definitions/MinimalModelInput"
         },
         "model": {
           "$ref": "#/definitions/ModelDescription"
         },
         "outputs": {
+          "description": "Optional vector of outputs",
           "items": {
             "type": "number"
           },
           "type": "array"
         },
         "t": {
+          "description": "Vector of times at which the model is run",
           "items": {
             "type": "number"
           },
           "type": "array"
         },
         "u": {
+          "description": "Matrix of states",
           "items": {
             "items": {
               "type": "number"
@@ -140,7 +79,22 @@
         "t",
         "u"
       ],
+      "title": "Minimal Model Output",
       "type": "object"
+    },
+    "MinimalModelOutputBatch": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/MinimalModelOutput"
+        },
+        {
+          "items": {
+            "$ref": "#/definitions/MinimalModelOutput"
+          },
+          "type": "array"
+        }
+      ],
+      "title": "Minimal Model Output Batch"
     },
     "ModelDescription": {
       "additionalProperties": false,
@@ -163,68 +117,8 @@
         "modelVersion",
         "connectorVersion"
       ],
+      "title": "Model Description",
       "type": "object"
-    },
-    "ModelInput": {
-      "anyOf": [
-        {
-          "$ref": "#/definitions/CommonModelInput"
-        },
-        {
-          "$ref": "#/definitions/MinimalModelInput"
-        }
-      ]
-    },
-    "ModelParameters": {
-      "additionalProperties": false,
-      "properties": {
-        "calibrationCaseCount": {
-          "description": "The total number of confirmed cases in the region before the calibration date.",
-          "type": "number"
-        },
-        "calibrationDate": {
-          "$ref": "#/definitions/ISODate",
-          "description": "An ISO-8601 string encoding the date of the most recent case data in the region."
-        },
-        "calibrationDeathCount": {
-          "description": "The total number of deaths in the region before the calibration date.",
-          "type": "number"
-        },
-        "interventionPeriods": {
-          "description": "A list of time periods, each with a different set of interventions.",
-          "items": {
-            "$ref": "#/definitions/InterventionPeriod"
-          },
-          "type": "array"
-        },
-        "r0": {
-          "description": "The assumed reproduction number for the virus. If this is null, then each\nmodel will use its own default value.",
-          "type": [
-            "number",
-            "null"
-          ]
-        }
-      },
-      "required": [
-        "calibrationDate",
-        "calibrationCaseCount",
-        "calibrationDeathCount",
-        "r0",
-        "interventionPeriods"
-      ],
-      "type": "object"
-    },
-    "Region": {
-      "examples": [
-        "US"
-      ],
-      "type": "string"
-    },
-    "Subregion": {
-      "examples": [
-        "US-AK"
-      ],
-      "type": "string"
     }
   }
 }
