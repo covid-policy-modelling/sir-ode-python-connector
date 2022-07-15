@@ -10,7 +10,7 @@ services:
     build:
       context: .
     volumes:
-      - ./test-job.json:/data/input/inputFile.json:ro
+      - ./test/test-job.json:/data/input/inputFile.json:ro
       - ./output:/data/output:rw
       - ./log:/data/log:rw
 
